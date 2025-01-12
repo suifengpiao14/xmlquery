@@ -34,9 +34,11 @@ const (
 )
 
 type Attr struct {
-	Name         xml.Name
-	Value        string
-	NamespaceURI string
+	Name           xml.Name
+	Value          string
+	NamespaceURI   string
+	NotEscapeValue bool
+	SimpleValue    bool
 }
 
 // A Node consists of a NodeType and some Data (tag name for
@@ -155,7 +157,7 @@ type indentation struct {
 	level    int
 	hasChild bool
 	indent   string
-	w io.Writer
+	w        io.Writer
 }
 
 func newIndentation(indent string, w io.Writer) *indentation {
@@ -222,24 +224,35 @@ func outputXML(w io.Writer, n *Node, preserveSpaces bool, config *outputConfigur
 		fmt.Fprintf(w, "<!%s>", n.Data)
 		return
 	case DeclarationNode:
-		io.WriteString(w, "<?" + n.Data)
+		io.WriteString(w, "<?"+n.Data)
 	default:
 		indent.Open()
 		if n.Prefix == "" {
-			io.WriteString(w, "<" + n.Data)
+			io.WriteString(w, "<"+n.Data)
 		} else {
 			fmt.Fprintf(w, "<%s:%s", n.Prefix, n.Data)
 		}
 	}
 
 	for _, attr := range n.Attr {
+		if attr.SimpleValue {
+			fmt.Fprintf(w, `%v`, attr.Value)
+			continue
+		}
 		if attr.Name.Space != "" {
 			fmt.Fprintf(w, ` %s:%s=`, attr.Name.Space, attr.Name.Local)
 		} else {
 			fmt.Fprintf(w, ` %s=`, attr.Name.Local)
 		}
-
-		fmt.Fprintf(w, `"%v"`, html.EscapeString(attr.Value))
+		value := attr.Value
+		if !attr.NotEscapeValue {
+			value = html.EscapeString(attr.Value)
+		}
+		if strings.Contains(value, `"`) && !strings.Contains(value, `'`) {
+			fmt.Fprintf(w, `'%v'`, value)
+		} else {
+			fmt.Fprintf(w, `"%v"`, value)
+		}
 	}
 	if n.Type == DeclarationNode {
 		io.WriteString(w, "?>")
