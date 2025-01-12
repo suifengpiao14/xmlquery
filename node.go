@@ -34,11 +34,9 @@ const (
 )
 
 type Attr struct {
-	Name           xml.Name
-	Value          string
-	NamespaceURI   string
-	NotEscapeValue bool
-	SimpleValue    bool
+	Name         xml.Name
+	Value        string
+	NamespaceURI string
 }
 
 // A Node consists of a NodeType and some Data (tag name for
@@ -235,8 +233,8 @@ func outputXML(w io.Writer, n *Node, preserveSpaces bool, config *outputConfigur
 	}
 
 	for _, attr := range n.Attr {
-		if attr.SimpleValue {
-			fmt.Fprintf(w, `%v`, attr.Value)
+		if attr.Name.Local == "" {
+			fmt.Fprintf(w, ` %v `, attr.Value)
 			continue
 		}
 		if attr.Name.Space != "" {
@@ -245,9 +243,6 @@ func outputXML(w io.Writer, n *Node, preserveSpaces bool, config *outputConfigur
 			fmt.Fprintf(w, ` %s=`, attr.Name.Local)
 		}
 		value := attr.Value
-		if !attr.NotEscapeValue {
-			value = html.EscapeString(attr.Value)
-		}
 		if strings.Contains(value, `"`) && !strings.Contains(value, `'`) {
 			fmt.Fprintf(w, `'%v'`, value)
 		} else {
