@@ -59,6 +59,7 @@ type outputConfiguration struct {
 	emptyElementTagSupport bool
 	skipComments           bool
 	useIndentation         string
+	skipDeclarationNode    bool
 }
 
 type OutputOption func(*outputConfiguration)
@@ -67,6 +68,11 @@ type OutputOption func(*outputConfiguration)
 func WithOutputSelf() OutputOption {
 	return func(oc *outputConfiguration) {
 		oc.printSelf = true
+	}
+}
+func WithOutDeclarationNode() OutputOption {
+	return func(oc *outputConfiguration) {
+		oc.skipDeclarationNode = true
 	}
 }
 
@@ -201,6 +207,9 @@ func (i *indentation) Close() {
 
 func outputXML(w io.Writer, n *Node, preserveSpaces bool, config *outputConfiguration, indent *indentation) {
 	preserveSpaces = calculatePreserveSpaces(n, preserveSpaces)
+	if config.skipDeclarationNode && n.Type == DeclarationNode {
+		return
+	}
 	switch n.Type {
 	case TextNode:
 		io.WriteString(w, html.EscapeString(n.sanitizedData(preserveSpaces)))
