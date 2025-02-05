@@ -37,6 +37,24 @@ func (n *Node) SelectAttr(name string) string {
 	return ""
 }
 
+// SelectAttr returns the attribute values with the specified name.
+func (n *Node) SelectAttrs(name string) []string {
+	if n.Type == AttributeNode {
+		if n.Data == name {
+			return []string{n.InnerText()}
+		}
+		return nil
+	}
+	xmlName := newXMLName(name)
+	values := make([]string, 0)
+	for _, attr := range n.Attr {
+		if attr.Name == xmlName {
+			values = append(values, attr.Value)
+		}
+	}
+	return values
+}
+
 var _ xpath.NodeNavigator = &NodeNavigator{}
 
 // CreateXPathNavigator creates a new xpath.NodeNavigator for the specified
