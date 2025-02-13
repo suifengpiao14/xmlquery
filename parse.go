@@ -2,13 +2,14 @@ package xmlquery
 
 import (
 	"bufio"
-	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/suifengpiao14/xmlquery/xml"
 
 	"github.com/antchfx/xpath"
 	"golang.org/x/net/html/charset"

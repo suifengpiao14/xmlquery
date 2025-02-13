@@ -2,11 +2,12 @@ package xmlquery
 
 import (
 	"bufio"
-	"encoding/xml"
 	"fmt"
 	"html"
 	"io"
 	"strings"
+
+	"github.com/suifengpiao14/xmlquery/xml"
 )
 
 // A NodeType is the type of a Node.

@@ -1,8 +1,9 @@
 package xmlquery
 
 import (
-	"encoding/xml"
 	"io"
+
+	"github.com/suifengpiao14/xmlquery/xml"
 )
 
 type ParserOptions struct {

@@ -1,11 +1,12 @@
 package xmlquery
 
 import (
-	"encoding/xml"
 	"html"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/suifengpiao14/xmlquery/xml"
 )
 
 func findRoot(n *Node) *Node {
@@ -496,7 +497,6 @@ func TestWriteWithNamespacePrefix(t *testing.T) {
 		t.Fatal("xml document missing some characters")
 	}
 }
-
 
 func TestQueryWithPrefix(t *testing.T) {
 	s := `<?xml version="1.0" encoding="UTF-8"?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body test="1"><ns2:Fault xmlns:ns2="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns3="http://www.w3.org/2003/05/soap-envelope"><faultcode>ns2:Client</faultcode><faultstring>This is a client fault</faultstring></ns2:Fault></S:Body></S:Envelope>`

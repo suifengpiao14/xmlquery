@@ -2,8 +2,9 @@ package xmlquery
 
 import (
 	"bytes"
-	"encoding/xml"
 	"testing"
+
+	"github.com/suifengpiao14/xmlquery/xml"
 )
 
 func TestApplyOptions(t *testing.T) {
@@ -12,7 +13,7 @@ func TestApplyOptions(t *testing.T) {
 	}
 	options := ParserOptions{
 		Decoder: &DecoderOptions{
-			Strict: false,
+			Strict:    false,
 			AutoClose: []string{"foo"},
 			Entity: map[string]string{
 				"bar": "baz",
