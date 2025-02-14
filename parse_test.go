@@ -656,3 +656,17 @@ func TestDirective(t *testing.T) {
 		t.Errorf("expected count is 4 but got %d", m)
 	}
 }
+
+func TestParse1(t *testing.T) {
+	s := `<div {{#class}} {{class}} {{/class}}>hello</div>`
+	root, err := ParseWithOptions(strings.NewReader(s), ParserOptions{
+		Decoder: &DecoderOptions{
+			Strict: false,
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	div := root.SelectElement(`div`)
+	fmt.Println(div)
+}
