@@ -55,12 +55,14 @@ type Node struct {
 }
 
 type outputConfiguration struct {
-	printSelf              bool
-	preserveSpaces         bool
-	emptyElementTagSupport bool
-	skipComments           bool
-	useIndentation         string
-	skipDeclarationNode    bool
+	printSelf                 bool
+	preserveSpaces            bool
+	emptyElementTagSupport    bool
+	skipComments              bool
+	useIndentation            string
+	skipDeclarationNode       bool
+	TextNodeIgnoreHtmlEscaper bool // 忽略html转义字符，比如&nbsp;等特殊符号不会被转义为对应的实体。
+
 }
 
 type OutputOption func(*outputConfiguration)
@@ -74,6 +76,11 @@ func WithOutputSelf() OutputOption {
 func WithOutDeclarationNode() OutputOption {
 	return func(oc *outputConfiguration) {
 		oc.skipDeclarationNode = true
+	}
+}
+func WithTextNodeIgnoreHtmlEscaper() OutputOption {
+	return func(oc *outputConfiguration) {
+		oc.TextNodeIgnoreHtmlEscaper = true
 	}
 }
 
@@ -213,7 +220,12 @@ func outputXML(w io.Writer, n *Node, preserveSpaces bool, config *outputConfigur
 	}
 	switch n.Type {
 	case TextNode:
-		io.WriteString(w, html.EscapeString(n.sanitizedData(preserveSpaces)))
+		s := n.sanitizedData(preserveSpaces)
+		if !config.TextNodeIgnoreHtmlEscaper {
+			s = html.EscapeString(s)
+		}
+
+		io.WriteString(w, s)
 		return
 	case CharDataNode:
 		io.WriteString(w, "<![CDATA[")
